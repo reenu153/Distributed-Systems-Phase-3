@@ -1,0 +1,53 @@
+
+services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  wordcount_server_1:
+    build: ./server
+    environment:
+      - SERVER_PORT=18812
+      - REDIS_HOST=redis
+    ports:
+      - "18812:18812"
+    depends_on:
+      - redis
+
+  wordcount_server_2:
+    build: ./server
+    environment:
+      - SERVER_PORT=18813
+      - REDIS_HOST=redis
+    ports:
+      - "18813:18813"
+    depends_on:
+      - redis
+
+  wordcount_server_3:
+    build: ./server
+    environment:
+      - SERVER_PORT=18814
+      - REDIS_HOST=redis
+    ports:
+      - "18814:18814"
+    depends_on:
+      - redis
+
+  load_balancer:
+    build: ./load-balancer
+    environment:
+      - LOAD_BALANCING_ALGORITHM=ROUND_ROBIN
+      # -LOAD_BALANCING_ALGORITHM="LEAST_CONNECTIONS"
+    depends_on:
+      - wordcount_server_1
+      - wordcount_server_2
+      - wordcount_server_3
+    ports:
+      - "8765:8765"
+
+  client:
+    build: ./client
+    depends_on:
+      - load_balancer
