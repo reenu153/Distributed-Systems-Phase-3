@@ -46,21 +46,21 @@ def select_server_round_robin():
         round_robin_index += 1
         return server
 
-def select_server_least_connections():
+def select_server_random():
         healthy_servers = [server for server in SERVERS if server["healthy"]]
 
         if not healthy_servers:
             raise Exception("No healthy servers available")
 
-        return min(healthy_servers, key=lambda s: s["connections"])
+        return random.choice(healthy_servers)
 
 
 async def distribute_load(fileName, keyword):
         load_balancing_algo = os.getenv('LOAD_BALANCING_ALGORITHM',"ROUND_ROBIN")
         if load_balancing_algo == "ROUND_ROBIN":
             server = select_server_round_robin()
-        elif load_balancing_algo == "LEAST_CONNECTIONS":
-            server = select_server_least_connections()
+        elif load_balancing_algo == "RANDOM":
+            server = select_server_random()
 
         try:
             print(f"Routing request to " + server["host"] + " listening on port " + str(server["port"]))

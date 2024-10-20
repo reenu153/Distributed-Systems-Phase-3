@@ -38,8 +38,8 @@ services:
   load_balancer:
     build: ./load-balancer
     environment:
-      - LOAD_BALANCING_ALGORITHM=ROUND_ROBIN
-      # -LOAD_BALANCING_ALGORITHM="LEAST_CONNECTIONS"
+      # - LOAD_BALANCING_ALGORITHM=ROUND_ROBIN
+      - LOAD_BALANCING_ALGORITHM=RANDOM
     depends_on:
       - wordcount_server_1
       - wordcount_server_2
